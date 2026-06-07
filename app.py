@@ -227,20 +227,21 @@ if uploaded_file is not None:
             
         my_bar.progress(100, text="Zipping files...")
         
-        # Create ZIP in memory so Streamlit can offer it as a download
-        zip_buffer = io.BytesIO()
-        with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+       # --- FIX: Save ZIP to disk instead of memory for Cloud stability ---
+        zip_name = "Class_Performance_Dossiers.zip"
+        with zipfile.ZipFile(zip_name, "w") as zip_file:
             for pdf_file in pdf_filenames:
                 zip_file.write(pdf_file)
-                os.remove(pdf_file) # Clean up the hard drive
+                os.remove(pdf_file) # Clean up the individual PDFs
                 
         st.success("✅ All reports generated successfully!")
         st.balloons() # Fun animation for your presentation!
         
-        # Display Download Button
-        st.download_button(
-            label="📥 Download Class Dossiers (ZIP)",
-            data=zip_buffer.getvalue(),
-            file_name="Class_Performance_Dossiers.zip",
-            mime="application/zip"
-        )
+        # Display Download Button by reading safely from the disk
+        with open(zip_name, "rb") as fp:
+            st.download_button(
+                label="📥 Download Class Dossiers (ZIP)",
+                data=fp,
+                file_name=zip_name,
+                mime="application/zip"
+            )

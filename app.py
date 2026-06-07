@@ -227,19 +227,20 @@ if uploaded_file is not None:
             
         my_bar.progress(100, text="Zipping files...")
         
-    zip_name = "Class_Performance_Dossiers.zip"
+        # Save ZIP to disk safely
+        zip_name = "Class_Performance_Dossiers.zip"
         with zipfile.ZipFile(zip_name, "w") as zip_file:
             for pdf_file in pdf_filenames:
                 zip_file.write(pdf_file)
-                os.remove(pdf_file) # Clean up the individual PDFs
+                os.remove(pdf_file) # Clean up the hard drive
                 
         st.success("✅ All reports generated successfully!")
-        st.balloons() # Fun animation for your presentation!
+        st.balloons() 
         
-        # --- NEW: Tell Streamlit to remember the file exists! ---
+        # Tell Streamlit to remember the file exists!
         st.session_state['file_ready'] = True
 
-    # --- NEW: Move Download Button OUTSIDE the Generate block ---
+    # Display Download Button safely outside the generate loop
     if st.session_state.get('file_ready', False):
         with open("Class_Performance_Dossiers.zip", "rb") as fp:
             st.download_button(

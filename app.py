@@ -227,8 +227,7 @@ if uploaded_file is not None:
             
         my_bar.progress(100, text="Zipping files...")
         
-       # --- FIX: Save ZIP to disk instead of memory for Cloud stability ---
-        zip_name = "Class_Performance_Dossiers.zip"
+    zip_name = "Class_Performance_Dossiers.zip"
         with zipfile.ZipFile(zip_name, "w") as zip_file:
             for pdf_file in pdf_filenames:
                 zip_file.write(pdf_file)
@@ -237,11 +236,15 @@ if uploaded_file is not None:
         st.success("✅ All reports generated successfully!")
         st.balloons() # Fun animation for your presentation!
         
-        # Display Download Button by reading safely from the disk
-        with open(zip_name, "rb") as fp:
+        # --- NEW: Tell Streamlit to remember the file exists! ---
+        st.session_state['file_ready'] = True
+
+    # --- NEW: Move Download Button OUTSIDE the Generate block ---
+    if st.session_state.get('file_ready', False):
+        with open("Class_Performance_Dossiers.zip", "rb") as fp:
             st.download_button(
                 label="📥 Download Class Dossiers (ZIP)",
                 data=fp,
-                file_name=zip_name,
+                file_name="Class_Performance_Dossiers.zip",
                 mime="application/zip"
             )
